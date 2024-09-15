@@ -9,34 +9,35 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import ru.detector.WeatherSensorAPI.dto.MeasurementDTO;
+import ru.detector.WeatherSensorAPI.dto.MeasurementsResponse;
 import ru.detector.WeatherSensorAPI.models.Measurement;
-import ru.detector.WeatherSensorAPI.models.Sensor;
 import ru.detector.WeatherSensorAPI.services.MeasurementsService;
-import ru.detector.WeatherSensorAPI.services.SensorsService;
 import ru.detector.WeatherSensorAPI.util.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/measurements")
 public class MeasurementsController {
 
-    private final SensorsService sensorsService;
     private final MeasurementsService measurementsService;
     private final MeasurementValidator measurementValidator;
 
     @Autowired
-    public MeasurementsController(SensorsService sensorsService, MeasurementsService measurementsService, MeasurementValidator measurementValidator) {
-        this.sensorsService = sensorsService;
+    public MeasurementsController(MeasurementsService measurementsService, MeasurementValidator measurementValidator) {
         this.measurementsService = measurementsService;
         this.measurementValidator = measurementValidator;
     }
 
     @GetMapping("")
-    public List<MeasurementDTO> getMeasurements() {
-        return measurementsService.findAll().stream().map(this::convertToMeasurementDTO).collect(Collectors.toList());
+    public MeasurementsResponse getMeasurements() {
+        return new MeasurementsResponse(
+                measurementsService.findAll()
+                        .stream()
+                        .map(this::convertToMeasurementDTO)
+                        .collect(Collectors.toList())
+        );
     }
 
     @GetMapping("/rainyDaysCount")
